@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 
 interface IProps {
@@ -8,10 +8,12 @@ interface IProps {
 
 const CustomQrScanner = (props: IProps) => {
   const { qrCodeSuccessCallback, qrCodeErrorCallback } = props;
+  const [cameraList, setCameraList] = useState<any>();
 
   const videoRef = useRef(null);
   const startScan = () => {
     if (videoRef && videoRef.current) {
+      QrScanner.listCameras().then((res) => setCameraList(res));
       const qrScanner = new QrScanner(
         videoRef.current,
         (result) => qrCodeSuccessCallback(result.data),
@@ -25,7 +27,12 @@ const CustomQrScanner = (props: IProps) => {
   useEffect(() => {
     startScan();
   }, [videoRef]);
-  return <video style={{ width: "100%" }} ref={videoRef}></video>;
+  return (
+    <div>
+      <p>camera list := {JSON.stringify(cameraList)}</p>
+      <video style={{ width: "100%" }} ref={videoRef}></video>;
+    </div>
+  );
 };
 
 export default CustomQrScanner;

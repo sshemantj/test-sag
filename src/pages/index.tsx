@@ -20,7 +20,11 @@ export default function Home() {
   useEffect(() => {
     const handleStartCamera = async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
+        await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "environment",
+          },
+        });
       } catch (err: any) {
         console.log(err.message || "Failed to access camera.");
       }

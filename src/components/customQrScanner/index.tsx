@@ -25,7 +25,7 @@ const CustomQrScanner = (props: IProps) => {
   useEffect(() => {
     startScan();
   }, [videoRef]);
-  return <video ref={videoRef}></video>;
+  return <video style={{ width: "100%" }} ref={videoRef}></video>;
 };
 
 export default CustomQrScanner;

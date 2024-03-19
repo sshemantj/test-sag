@@ -6,6 +6,17 @@ let myState = true;
 
 export default function Home() {
   useEffect(() => {
+    const handleStartCamera = async () => {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (err: any) {
+        console.log(err.message || "Failed to access camera.");
+      }
+    };
+    handleStartCamera();
+  }, []);
+
+  useEffect(() => {
     const formatsToSupport = Object.values(Html5QrcodeSupportedFormats).filter(
       (item) => Number.isInteger(item)
     ) as Html5QrcodeSupportedFormats[];

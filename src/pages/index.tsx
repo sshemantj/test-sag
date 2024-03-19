@@ -1,10 +1,22 @@
 import Head from "next/head";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
-
-let myState = true;
+import CustomQrScanner from "@/components/customQrScanner";
+import CustomHtml5Qrcode from "@/components/customHtml5";
+import { isAndroid, isIphone } from "@/utils/checkDevice";
 
 export default function Home() {
+  const [currentDevice, setCurrentDevice] = useState<
+    "iphone" | "android" | "other"
+  >("other");
+
+  useLayoutEffect(() => {
+    if (isIphone()) {
+      setCurrentDevice("iphone");
+    } else if (isAndroid()) {
+      setCurrentDevice("android");
+    }
+  }, []);
+
   useEffect(() => {
     const handleStartCamera = async () => {
       try {
@@ -16,36 +28,12 @@ export default function Home() {
     handleStartCamera();
   }, []);
 
-  useEffect(() => {
-    const formatsToSupport = Object.values(Html5QrcodeSupportedFormats).filter(
-      (item) => Number.isInteger(item)
-    ) as Html5QrcodeSupportedFormats[];
-
-    const html5QrCode = new Html5Qrcode("reader", {
-      formatsToSupport,
-      verbose: true,
-    });
-    const qrCodeSuccessCallback = (decodedText: string) => {
-      alert(decodedText);
-    };
-    const qrCodeErrorCallback = (decodedText: string) => {
-      // alert(decodedText);
-    };
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-    if (myState) {
-      myState = false;
-      html5QrCode.start(
-        {
-          facingMode:
-            process.env.NODE_ENV === "development" ? "user" : "environment",
-        },
-        config,
-        qrCodeSuccessCallback,
-        qrCodeErrorCallback
-      );
-    }
-  }, []);
+  const qrCodeSuccessCallback = (decodedText: string) => {
+    alert(decodedText);
+  };
+  const qrCodeErrorCallback = (error: string) => {
+    console.log(error);
+  };
 
   return (
     <>
@@ -53,7 +41,17 @@ export default function Home() {
         <title>Test Scan</title>
       </Head>
       <main>
-        <div id="reader"></div>
+        <h1>current device:= {currentDevice}</h1>
+        {currentDevice === "iphone" && (
+          <CustomHtml5Qrcode
+            {...{ qrCodeSuccessCallback, qrCodeErrorCallback }}
+          />
+        )}
+        {currentDevice === "android" && (
+          <CustomQrScanner
+            {...{ qrCodeSuccessCallback, qrCodeErrorCallback }}
+          />
+        )}
       </main>
     </>
   );
